@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductosAPI", "ProductosAP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PedidosAPI", "PedidosAPI\PedidosAPI.csproj", "{34440363-9EFF-4A6C-92E8-6BDE019268C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost1", "AppHost1\AppHost1.csproj", "{36F3F9EE-ACD9-47F7-892D-DA7C87114B1F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults1", "ServiceDefaults1\ServiceDefaults1.csproj", "{8992DB9D-0D53-4639-A23F-D02CCB42B125}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{34440363-9EFF-4A6C-92E8-6BDE019268C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34440363-9EFF-4A6C-92E8-6BDE019268C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34440363-9EFF-4A6C-92E8-6BDE019268C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36F3F9EE-ACD9-47F7-892D-DA7C87114B1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36F3F9EE-ACD9-47F7-892D-DA7C87114B1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36F3F9EE-ACD9-47F7-892D-DA7C87114B1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36F3F9EE-ACD9-47F7-892D-DA7C87114B1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8992DB9D-0D53-4639-A23F-D02CCB42B125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8992DB9D-0D53-4639-A23F-D02CCB42B125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8992DB9D-0D53-4639-A23F-D02CCB42B125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8992DB9D-0D53-4639-A23F-D02CCB42B125}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

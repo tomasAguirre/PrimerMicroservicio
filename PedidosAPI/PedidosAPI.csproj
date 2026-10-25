@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceDefaults1\ServiceDefaults1.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -7,6 +7,8 @@ using System.Threading;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults(); //service defaults de aspire
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -74,6 +76,8 @@ app.MapPost("/pedidos", async (
            return Results.Created($"/pedidos/{pedido.Id}", pedido);
        }
    );
+
+app.MapDefaultEndpoints();
 
 app.Run();
 

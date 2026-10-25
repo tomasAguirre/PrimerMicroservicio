@@ -3,6 +3,8 @@ using ProductosAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -45,6 +47,8 @@ app.MapGet("/productos/{id:int}", async (int id, ProductosBbContext db, Cancella
     return producto is null ? Results.NotFound() : Results.Ok(producto);
 }
 );
+
+app.MapDefaultEndpoints();
 
 app.Run();
 
