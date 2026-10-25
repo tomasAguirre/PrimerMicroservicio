@@ -1,0 +1,13 @@
+@PedidosAPI_HostAddress = http://localhost:5246
+
+GET {{PedidosAPI_HostAddress}}/pedidos
+Accept: application/json
+
+###
+
+POST {{PedidosAPI_HostAddress}}/pedidos
+content-type: application/json
+{
+   "productoId": 1,
+   "cantidad" : 2
+}
