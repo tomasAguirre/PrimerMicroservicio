@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using PedidosAPI.Clientes;
 using PedidosAPI.Contratos;
 using PedidosAPI.Data;
 using PedidosAPI.Entidades;
+using Polly.Timeout;
 using System.Threading;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,7 +65,40 @@ app.MapPost("/pedidos", async (
                return Results.BadRequest("Producto y Cantidad deben de ser validos");
            }
 
-           var producto = await productosClient.ObtenerPorIdAsync(request.ProductoId, cancellationToken);
+           ProductoResponse? producto;
+
+           try
+           {
+               producto = await productosClient.ObtenerPorIdAsync(request.ProductoId, cancellationToken);
+           }
+           catch (HttpIOException ex)
+           {
+               logger.LogError(ex, "Error al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
+               return Results.Problem(
+                        title: "Servicio de productos no disponible",
+                        statusCode: StatusCodes.Status503ServiceUnavailable
+                   );
+           }
+           catch (TimeoutRejectedException ex)
+           {
+               logger.LogError(ex, "Timeout al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
+               return Results.Problem(
+                           title: "Servicio de productos no disponible",
+                           detail: "La consulta Tardo demasiado",
+                           statusCode: StatusCodes.Status503ServiceUnavailable
+                    );
+           }
+           catch (OperationCanceledException ex)
+           {
+
+               logger.LogError(ex, "La operación fue cancelada al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
+               return Results.Problem(
+                           title: "Servicio de productos no disponible",
+                           detail: "La operación fue cancelada",
+                           statusCode: StatusCodes.Status503ServiceUnavailable
+                     );
+           }
+
 
            if (producto is null)
                return Results.BadRequest("El producto indicado No existe");
