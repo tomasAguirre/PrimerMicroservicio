@@ -4,6 +4,7 @@ using PedidosAPI.Clientes;
 using PedidosAPI.Contratos;
 using PedidosAPI.Data;
 using PedidosAPI.Entidades;
+using PedidosAPI.Jobs;
 using Polly.Timeout;
 using System.Threading;
 
@@ -19,6 +20,8 @@ builder.Services.AddDbContext<PedidosDbContext>(option =>
     option.UseSqlite(builder.Configuration.GetConnectionString("Pedidos"))  
                 );
 
+builder.Services.AddHostedService<ProcesarPedidosService>();
+
 builder.Services.AddHttpClient<ProductosClient>(cliente =>
 {
     var baseUrl = builder.Configuration["Productos:BaseUrl"]
@@ -27,9 +30,9 @@ builder.Services.AddHttpClient<ProductosClient>(cliente =>
     cliente.BaseAddress = new Uri(baseUrl); 
 }).AddStandardResilienceHandler(option =>   //Resilencia 
 {
-    option.Retry.MaxRetryAttempts = 1;
-    option.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(5);
-    option.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);
+    option.Retry.MaxRetryAttempts = 3;
+    option.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(10);
+    option.AttemptTimeout.Timeout = TimeSpan.FromSeconds(5);
 });
 
 var app = builder.Build();
@@ -65,58 +68,63 @@ app.MapPost("/pedidos", async (
                return Results.BadRequest("Producto y Cantidad deben de ser validos");
            }
 
-           ProductoResponse? producto;
+           #region esto se realizara en el job
+           //ProductoResponse? producto;
 
-           try
-           {
-               producto = await productosClient.ObtenerPorIdAsync(request.ProductoId, cancellationToken);
-           }
-           catch (HttpIOException ex)
-           {
-               logger.LogError(ex, "Error al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
-               return Results.Problem(
-                        title: "Servicio de productos no disponible",
-                        statusCode: StatusCodes.Status503ServiceUnavailable
-                   );
-           }
-           catch (TimeoutRejectedException ex)
-           {
-               logger.LogError(ex, "Timeout al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
-               return Results.Problem(
-                           title: "Servicio de productos no disponible",
-                           detail: "La consulta Tardo demasiado",
-                           statusCode: StatusCodes.Status503ServiceUnavailable
-                    );
-           }
-           catch (OperationCanceledException ex)
-           {
+           //try
+           //{
+           //    producto = await productosClient.ObtenerPorIdAsync(request.ProductoId, cancellationToken);
+           //}
+           //catch (HttpIOException ex)
+           //{
+           //    logger.LogError(ex, "Error al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
+           //    return Results.Problem(
+           //             title: "Servicio de productos no disponible",
+           //             statusCode: StatusCodes.Status503ServiceUnavailable
+           //        );
+           //}
+           //catch (TimeoutRejectedException ex)
+           //{
+           //    logger.LogError(ex, "Timeout al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
+           //    return Results.Problem(
+           //                title: "Servicio de productos no disponible",
+           //                detail: "La consulta Tardo demasiado",
+           //                statusCode: StatusCodes.Status503ServiceUnavailable
+           //         );
+           //}
+           //catch (OperationCanceledException ex)
+           //{
 
-               logger.LogError(ex, "La operación fue cancelada al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
-               return Results.Problem(
-                           title: "Servicio de productos no disponible",
-                           detail: "La operación fue cancelada",
-                           statusCode: StatusCodes.Status503ServiceUnavailable
-                     );
-           }
+           //    logger.LogError(ex, "La operación fue cancelada al obtener el producto {ProductoId} desde ProductosAPI", request.ProductoId);
+           //    return Results.Problem(
+           //                title: "Servicio de productos no disponible",
+           //                detail: "La operación fue cancelada",
+           //                statusCode: StatusCodes.Status503ServiceUnavailable
+           //          );
+           //}
 
 
-           if (producto is null)
-               return Results.BadRequest("El producto indicado No existe");
+           //if (producto is null)
+           //    return Results.BadRequest("El producto indicado No existe");
+           #endregion
 
            var pedido = new Pedido
            {
                ProductoId = request.ProductoId,
                Cantidad = request.Cantidad,
-               PrecioUnitario = producto.Precio,
-               Total = producto.Precio * request.Cantidad,
-               FechaCreacion = DateTime.UtcNow
+               //PrecioUnitario = producto.Precio,
+               //Total = producto.Precio * request.Cantidad,
+               FechaCreacion = DateTime.UtcNow,
+               Estado = EstadoPedido.Pendiente
            };
            db.Pedidos.Add(pedido);
            await db.SaveChangesAsync(cancellationToken);
 
-           logger.LogInformation("Pedido {PedidoId} Creado ", pedido.Id);
+           logger.LogInformation("Pedido {PedidoId} guardado como pendiente ", pedido.Id);
 
-           return Results.Created($"/pedidos/{pedido.Id}", pedido);
+           //return Results.Created($"/pedidos/{pedido.Id}", pedido); 
+           //Se acepto la peticion pero en el futuro sera resuelta 
+           return Results.Accepted($"/pedidos/{pedido.Id}", pedido);
        }
    );
 

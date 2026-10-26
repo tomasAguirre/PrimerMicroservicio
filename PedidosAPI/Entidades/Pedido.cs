@@ -1,4 +1,6 @@
-﻿namespace PedidosAPI.Entidades
+﻿using System.Text.Json.Serialization;
+
+namespace PedidosAPI.Entidades
 {
     public class Pedido
     {
@@ -8,5 +10,15 @@
         public decimal PrecioUnitario { get; set; }
         public decimal Total { get; set; }
         public DateTime FechaCreacion { get; set; }
+
+        public EstadoPedido Estado { get; set; } = EstadoPedido.Pendiente;
+    }
+
+    [JsonConverter(typeof(JsonStringEnumConverter<EstadoPedido>))]
+    public enum EstadoPedido
+    {
+        Pendiente,
+        Procesando,
+        Rechazado
     }
 }

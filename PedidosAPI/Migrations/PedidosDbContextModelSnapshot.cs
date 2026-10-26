@@ -26,6 +26,9 @@ namespace PedidosAPI.Migrations
                     b.Property<int>("Cantidad")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Estado")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("TEXT");
 

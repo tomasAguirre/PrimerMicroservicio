@@ -1,6 +1,6 @@
 @PedidosAPI_HostAddress = http://localhost:5246
 
-GET {{PedidosAPI_HostAddress}}/pedidos
+GET {{PedidosAPI_HostAddress}}/pedidos/4
 Accept: application/json
 
 ###
