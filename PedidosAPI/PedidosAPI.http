@@ -9,5 +9,5 @@ POST {{PedidosAPI_HostAddress}}/pedidos
 content-type: application/json
 {
    "productoId": 1,
-   "cantidad" : 2
+   "cantidad" : 3
 }

@@ -22,7 +22,12 @@ builder.Services.AddHttpClient<ProductosClient>(cliente =>
     var baseUrl = builder.Configuration["Productos:BaseUrl"]
         ?? throw new InvalidOperationException("No se ha configurado la URL base de ProductosAPI");
 
-    cliente.BaseAddress = new Uri(baseUrl);
+    cliente.BaseAddress = new Uri(baseUrl); 
+}).AddStandardResilienceHandler(option =>   //Resilencia 
+{
+    option.Retry.MaxRetryAttempts = 1;
+    option.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(5);
+    option.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);
 });
 
 var app = builder.Build();
@@ -50,6 +55,7 @@ app.MapPost("/pedidos", async (
        CrearPedidoRequest request,
        ProductosClient productosClient,
        PedidosDbContext db,
+       ILogger<Program> logger,
        CancellationToken cancellationToken) =>
        {
            if (request.ProductoId == 0 || request.Cantidad == 0)
@@ -72,6 +78,8 @@ app.MapPost("/pedidos", async (
            };
            db.Pedidos.Add(pedido);
            await db.SaveChangesAsync(cancellationToken);
+
+           logger.LogInformation("Pedido {PedidoId} Creado ", pedido.Id);
 
            return Results.Created($"/pedidos/{pedido.Id}", pedido);
        }
